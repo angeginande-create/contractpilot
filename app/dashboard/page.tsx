@@ -57,8 +57,7 @@ const contractsThisMonth = contracts.filter((contract: any) => {
 const chartData = contracts.slice(0, 6).reverse();
 
 const maxValue = Math.max(
-  ...chartData.map((contract) => Number(contract.projectValue)),
-  1
+  ...chartData.map((contract: any) => Number(contract.projectValue))
 );
   return (
     <main className="min-h-screen bg-slate-50 p-10">
@@ -185,7 +184,7 @@ const maxValue = Math.max(
         No revenue data yet
       </div>
     ) : (
-      chartData.map((contract) => {
+      chartData.map((contract: any) => {
         const height = Math.max(
           (Number(contract.projectValue) / maxValue) * 100,
           8

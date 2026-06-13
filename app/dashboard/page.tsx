@@ -37,7 +37,7 @@ if (!user) {
   const totalContracts = contracts.length;
 
 const totalValue = contracts.reduce(
-  (sum: number, contract: { projectValue: number | string }) =>
+  (sum: number, contract: any) =>
     sum + Number(contract.projectValue || 0),
   0
 );
@@ -45,7 +45,7 @@ const totalValue = contracts.reduce(
 const currentMonth = new Date().getMonth();
 const currentYear = new Date().getFullYear();
 
-const contractsThisMonth = contracts.filter((contract) => {
+const contractsThisMonth = contracts.filter((contract: any) => {
   const date = new Date(contract.createdAt);
 
   return (
@@ -226,7 +226,7 @@ const maxValue = Math.max(
     {contracts.length} contracts
   </span>
 </div>
-          {contracts.map((contract) => (
+          {contracts.map((contract: any) => (
             <div
   key={contract.id}
   className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"

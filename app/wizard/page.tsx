@@ -66,6 +66,35 @@ export default function WizardPage() {
 
   const risk = useMemo(() => calculateRisk(data), [data]);
   const completeness = useMemo(() => calculateCompleteness(data), [data]);
+  async function saveContract() {
+  try {
+    const response = await fetch("/api/contracts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        freelancerName: data.freelancerName,
+        clientName: data.clientName,
+        projectValue: Number(data.projectValue),
+        deposit: Number(data.deposit),
+        freelancerType: data.freelancerType,
+      }),
+    });
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      console.error("API error:", text);
+      return;
+    }
+
+    const result = JSON.parse(text);
+    console.log("Contract saved:", result);
+  } catch (error) {
+    console.error("Save failed:", error);
+  }
+}
 
   const isComplete = () => {
     if (step === 0) {
@@ -123,7 +152,7 @@ export default function WizardPage() {
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 pb-8 pt-4 lg:grid-cols-[1fr_400px]">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 md:p-10">
+        <div className="rounded-4xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70 md:p-10">
           <Progress step={step} />
 
           {step === 0 && (
@@ -339,9 +368,11 @@ export default function WizardPage() {
   fileName="contractpilot-clean-premium-agreement.pdf"
   className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
 >
-  {({ loading }) =>
-    loading ? "Preparing PDF..." : "Generate Premium PDF"
-  }
+  {({ loading }) => (
+  <button onClick={saveContract}>
+    {loading ? "Preparing PDF..." : "Generate Premium PDF"}
+  </button>
+)}
 </PDFDownloadLink>
               )}
             </div>
@@ -454,7 +485,7 @@ function Dashboard({
   risk: ReturnType<typeof calculateRisk>;
 }) {
   return (
-    <aside className="h-fit space-y-5 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
+    <aside className="h-fit space-y-5 rounded-4xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/70">
       <div>
         <p className="mb-2 text-sm font-medium text-slate-500">Risk Score</p>
         <div className={`rounded-2xl px-4 py-4 ${risk.badgeClass}`}>

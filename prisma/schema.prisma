@@ -7,30 +7,32 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  image     String?
-  plan      String   @default("FREE")
-  createdAt DateTime @default(now())
+  id    String  @id @default(cuid())
+  email String  @unique
+  name  String?
+  image String?
 
   contracts Contract[]
+
+  createdAt DateTime @default(now())
 }
 
 model Contract {
- id             String   @id @default(cuid())
-  contractId     String   @unique
+  id String @id @default(cuid())
 
-  freelancerName String
-  clientName     String
+  contractId String @unique
 
-  projectValue   Float
-  deposit        Int
   freelancerType String
 
-  pdfUrl         String?
-  createdAt      DateTime @default(now())
+  clientName String
 
-  userId         String?
-  user           User?    @relation(fields: [userId], references: [id])
+  projectValue Float
+
+  deposit Int
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }

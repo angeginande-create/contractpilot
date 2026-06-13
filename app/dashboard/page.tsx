@@ -45,7 +45,7 @@ const totalValue = contracts.reduce(
 const currentMonth = new Date().getMonth();
 const currentYear = new Date().getFullYear();
 
-const contractsThisMonth = contracts.filter((contract) => {
+const contractsThisMonth = contracts.filter((contract: any) => {
   const date = new Date(contract.createdAt);
 
   return (

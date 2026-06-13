@@ -64,9 +64,18 @@ const maxValue = Math.max(
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 flex items-center justify-between">
           <div>
-            <h1 className="text-5xl font-bold text-slate-950">
-              ContractPilot Dashboard
-            </h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">
+             Welcome back
+          </p>
+
+          <h1 className="mt-3 text-5xl font-bold text-slate-950">
+  Welcome {user.name || session.user.name || "to ContractPilot"}
+          </h1>
+
+           <p className="mt-3 text-slate-500">
+            Manage your freelance agreements, track contract value, and download your PDFs.
+           </p>
+           
            <div className="mt-8 grid gap-6 lg:grid-cols-5">
   <div className="col-span-1 rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
     <p className="text-sm font-medium text-slate-500">

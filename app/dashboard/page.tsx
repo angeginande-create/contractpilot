@@ -118,7 +118,7 @@ const maxValue = Math.max(
     <h2 className="mt-3 text-5xl font-bold text-white">
       {Math.round(
         contracts.reduce(
-          (sum: number, c) => sum + c.deposit,
+          (sum: number, c: any) => sum + c.deposit,
           0
         ) / Math.max(contracts.length, 1)
       )}

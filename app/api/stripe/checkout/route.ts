@@ -1,15 +1,26 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+  if (!stripeSecretKey) {
+    return NextResponse.json(
+      { error: "Missing STRIPE_SECRET_KEY" },
+      { status: 500 }
+    );
+  }
+
+  const stripe = new Stripe(stripeSecretKey);
+
   const { searchParams } = new URL(request.url);
   const plan = searchParams.get("plan");
 
   const priceMap: Record<string, string> = {
-    pro: process.env.STRIPE_PRO_PRICE_ID!,
-    agency: process.env.STRIPE_AGENCY_PRICE_ID!,
+    pro: process.env.STRIPE_PRO_PRICE_ID || "",
+    agency: process.env.STRIPE_AGENCY_PRICE_ID || "",
   };
 
   const priceId = plan ? priceMap[plan] : null;
@@ -23,12 +34,7 @@ export async function GET(request: Request) {
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
+    line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
   });

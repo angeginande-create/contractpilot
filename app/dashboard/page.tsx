@@ -37,7 +37,8 @@ if (!user) {
   const totalContracts = contracts.length;
 
 const totalValue = contracts.reduce(
-  (sum, contract) => sum + Number(contract.projectValue || 0),
+  (sum: number, contract) =>
+    sum + Number(contract.projectValue || 0),
   0
 );
 
@@ -118,7 +119,7 @@ const maxValue = Math.max(
     <h2 className="mt-3 text-5xl font-bold text-white">
       {Math.round(
         contracts.reduce(
-          (sum, c) => sum + c.deposit,
+          (sum: number, c) => sum + c.deposit,
           0
         ) / Math.max(contracts.length, 1)
       )}

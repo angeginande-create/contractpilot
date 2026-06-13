@@ -37,7 +37,7 @@ if (!user) {
   const totalContracts = contracts.length;
 
 const totalValue = contracts.reduce(
-  (sum: number, contract) =>
+  (sum: number, contract: { projectValue: number | string }) =>
     sum + Number(contract.projectValue || 0),
   0
 );

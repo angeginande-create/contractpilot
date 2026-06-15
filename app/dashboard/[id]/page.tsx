@@ -1,35 +1,27 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import Sidebar from "@/app/components/Sidebar";
 
-type PageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-export default async function ContractDetailPage({ params }: PageProps) {
-  const { id } = await params;
-
+export default async function ContractDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const session = await getServerSession();
 
   if (!session?.user?.email) {
-    return (
-      <main className="min-h-screen bg-slate-50 p-10">
-        <h1 className="text-3xl font-bold">Please sign in</h1>
-      </main>
-    );
+    return <main className="p-10">Please sign in</main>;
   }
 
+  const { id } = await params;
+
   const user = await prisma.user.findUnique({
-    where: {
-      email: session.user.email,
-    },
+    where: { email: session.user.email },
   });
 
   if (!user) {
-    return notFound();
+    return <main className="p-10">User not found</main>;
   }
 
   const contract = await prisma.contract.findFirst({
@@ -40,79 +32,95 @@ export default async function ContractDetailPage({ params }: PageProps) {
   });
 
   if (!contract) {
-    return notFound();
+    return <main className="p-10">Contract not found</main>;
   }
 
+  const contractsCount = await prisma.contract.count({
+    where: { userId: user.id },
+  });
+
   return (
-    <main className="min-h-screen bg-slate-50 p-10">
-      <div className="mx-auto max-w-5xl">
-        <Link href="/dashboard" className="text-sm font-semibold text-slate-500">
-          ← Back to Dashboard
-        </Link>
+    <div className="flex min-h-screen bg-slate-50">
+      <Sidebar contractsCount={contractsCount} />
 
-        <div className="mt-8 rounded-3xl border bg-white p-10 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-widest text-slate-400">
-            Contract Details
-          </p>
+      <main className="flex-1 p-10">
+        <div className="mx-auto max-w-5xl">
+          <Link href="/dashboard" className="text-sm text-slate-500">
+            ← Back to Dashboard
+          </Link>
 
-          <h1 className="mt-3 text-5xl font-bold text-slate-950">
-            {contract.freelancerName}
-          </h1>
-          <div className="mt-4 flex flex-wrap gap-3">
-  <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
-    Active Contract
-  </span>
+          <div className="mt-6 rounded-3xl border bg-white p-8 shadow-sm">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <p className="text-sm font-semibold uppercase text-slate-500">
+                  Contract Details
+                </p>
 
-  <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
-    {contract.freelancerType}
-  </span>
-</div>
+                <h1 className="mt-2 text-4xl font-bold text-slate-950">
+                  {contract.clientName}
+                </h1>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <Info label="Client" value={contract.clientName} />
-            <Info label="Freelancer Type" value={contract.freelancerType} />
-            <Info
-              label="Project Value"
-              value={`$${Number(contract.projectValue).toLocaleString()}`}
-            />
-            <Info label="Deposit" value={`${contract.deposit}%`} />
-            <Info label="Contract ID" value={contract.contractId} />
-            <Info
-              label="Created"
-              value={new Date(contract.createdAt).toLocaleDateString()}
-            />
-          </div>
+                <p className="mt-2 text-slate-500">
+                  Contract ID: {contract.contractId}
+                </p>
+              </div>
 
-          <div className="mt-10 flex gap-4">
-            <Link
-              href="/wizard"
-              className="rounded-2xl bg-slate-950 px-6 py-3 font-semibold text-white"
-            >
-              New Contract
-            </Link>
-{contract.pdfUrl && (
-  <a
-    href={contract.pdfUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="rounded-2xl border border-slate-300 px-6 py-3 font-semibold text-slate-700"
-  >
-    Download PDF
-  </a>
-)}
+              <span className="rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-700">
+                {contract.status}
+              </span>
+            </div>
+
+            <div className="mt-10 grid gap-6 md:grid-cols-2">
+              <div className="rounded-2xl border p-5">
+                <p className="text-sm text-slate-500">Freelancer</p>
+                <p className="mt-2 text-xl font-bold">
+                  {contract.freelancerName}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border p-5">
+                <p className="text-sm text-slate-500">Type</p>
+                <p className="mt-2 text-xl font-bold capitalize">
+                  {contract.freelancerType}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border p-5">
+                <p className="text-sm text-slate-500">Project Value</p>
+                <p className="mt-2 text-xl font-bold">
+                  ${contract.projectValue.toLocaleString()}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border p-5">
+                <p className="text-sm text-slate-500">Deposit</p>
+                <p className="mt-2 text-xl font-bold">
+                  {contract.deposit}%
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 flex gap-3">
+              {contract.pdfUrl && (
+                <a
+                  href={contract.pdfUrl}
+                  target="_blank"
+                  className="rounded-2xl bg-green-700 px-6 py-3 font-semibold text-white"
+                >
+                  View PDF
+                </a>
+              )}
+
+              <Link
+                href="/dashboard"
+                className="rounded-2xl border px-6 py-3 font-semibold"
+              >
+                Back
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
-  );
-}
-
-
-function Info({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="rounded-2xl border bg-slate-50 p-5">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-2 text-xl font-bold text-slate-950">{value}</p>
+      </main>
     </div>
   );
 }

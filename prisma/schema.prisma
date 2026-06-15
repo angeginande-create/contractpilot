@@ -18,21 +18,19 @@ model User {
 }
 
 model Contract {
-  id String @id @default(cuid())
-
-  contractId String @unique
-
+  id             String   @id @default(cuid())
+  contractId     String
+  clientName     String
+  freelancerName String
   freelancerType String
+  projectValue   Float
+  deposit        Int
+  pdfUrl         String?
 
-  clientName String
+  status         String   @default("Draft")
 
-  projectValue Float
+  createdAt      DateTime @default(now())
 
-  deposit Int
-
-  userId String
-
-  user User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
+  userId         String
+  user           User @relation(fields: [userId], references: [id])
 }

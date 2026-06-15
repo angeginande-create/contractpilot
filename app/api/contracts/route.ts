@@ -29,29 +29,26 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    const contractId = crypto.randomUUID();
 
-const contractId = crypto.randomUUID();
+    const pdfUrl = await generateContractPdf({
+      ...body,
+      contractId,
+    });
 
-const pdfUrl = await generateContractPdf({
+const contractData = {
   contractId,
   freelancerName: body.freelancerName,
   clientName: body.clientName,
   projectValue: Number(body.projectValue),
   deposit: Number(body.deposit),
   freelancerType: body.freelancerType,
-});
+  pdfUrl,
+  userId: user.id,
+};
 
 const contract = await prisma.contract.create({
-  data: {
-    contractId,
-    freelancerName: body.freelancerName,
-    clientName: body.clientName,
-    projectValue: Number(body.projectValue),
-    deposit: Number(body.deposit),
-    freelancerType: body.freelancerType,
-    pdfUrl,
-    userId: user.id,
-  },
+  data: contractData as any,
 });
 
     return NextResponse.json({

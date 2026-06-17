@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import Sidebar from "@/app/components/Sidebar";
+import ContractPdfButton from "./ContractPdfButton";
 
 export default async function ContractDetailsPage({
   params,
@@ -101,15 +102,7 @@ export default async function ContractDetailsPage({
             </div>
 
             <div className="mt-10 flex gap-3">
-              {contract.pdfUrl && (
-                <a
-                  href={contract.pdfUrl}
-                  target="_blank"
-                  className="rounded-2xl bg-green-700 px-6 py-3 font-semibold text-white"
-                >
-                  View PDF
-                </a>
-              )}
+              <ContractPdfButton contract={contract} />
 
               <Link
                 href="/dashboard"

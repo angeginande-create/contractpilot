@@ -143,21 +143,24 @@ export default async function DashboardPage() {
 </td>
 
           <td className="px-6 py-4">
-          <Link
-  href={`/dashboard/${contract.id}`}
-  className="rounded-xl bg-green-600 px-4 py-2 text-white font-semibold"
->
-  View PDF
-</Link>
+  <div className="flex items-center gap-2">
+    <Link
+      href={`/dashboard/${contract.id}`}
+      className="rounded-xl bg-green-600 px-4 py-2 text-sm font-semibold text-white"
+    >
+      View PDF
+    </Link>
 
-<DeleteContractButton id={contract.id} />
-<Link
-  href={`/dashboard/${contract.id}`}
-  className="rounded-xl border px-4 py-2 text-sm font-semibold text-slate-700"
->
-  Details
-</Link>
-          </td>
+    <DeleteContractButton id={contract.id} />
+
+    <Link
+      href={`/dashboard/${contract.id}`}
+      className="rounded-xl border px-4 py-2 text-sm font-semibold text-slate-700"
+    >
+      Details
+    </Link>
+  </div>
+</td>
         </tr>
       ))}
     </tbody>

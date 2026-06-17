@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import ContractPDF from "./ContractPDF";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Pricing = "fixed" | "hourly";
 type IP = "client" | "reuse" | "mixed";
@@ -60,13 +62,19 @@ const initialData: FormData = {
 };
 
 export default function WizardPage() {
+  const router = useRouter();
+
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>(initialData);
   const [showPreview, setShowPreview] = useState(false);
+  const [savedContract, setSavedContract] = useState(false);
+
+   
 
   const risk = useMemo(() => calculateRisk(data), [data]);
   const completeness = useMemo(() => calculateCompleteness(data), [data]);
   async function saveContract() {
+    console.log("SAVE CONTRACT CALLED");
   try {
     const response = await fetch("/api/contracts", {
       method: "POST",
@@ -85,12 +93,16 @@ export default function WizardPage() {
     const text = await response.text();
 
     if (!response.ok) {
-      console.error("API error:", text);
-      return;
-    }
+  const errorData = JSON.parse(text);
+  toast.error(errorData.error || "Something went wrong");
+  return;
+}
 
     const result = JSON.parse(text);
     console.log("Contract saved:", result);
+    setSavedContract(true);
+    toast.success("Contract saved successfully");
+    router.push("/dashboard");
   } catch (error) {
     console.error("Save failed:", error);
   }
@@ -335,7 +347,11 @@ export default function WizardPage() {
               <SummaryPanel data={data} riskScore={risk.score} />
 
               <button
-                onClick={() => setShowPreview(true)}
+                onClick={async () => {
+                 alert("Button clicked");
+                 setShowPreview(true);
+                 await saveContract();
+                 }}
                 className="mt-8 w-full rounded-2xl bg-slate-950 px-6 py-4 font-semibold text-white transition hover:bg-slate-800"
               >
                 Generate contract preview
@@ -356,25 +372,29 @@ export default function WizardPage() {
               </button>
 
               {step < steps.length - 1 ? (
-                <button
-                  onClick={next}
-                  className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
-                  Continue
-                </button>
-              ) : (
-              <PDFDownloadLink
-  document={<ContractPDF data={data} />}
-  fileName="contractpilot-clean-premium-agreement.pdf"
-  className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
->
-  {({ loading }) => (
-  <button onClick={saveContract}>
-    {loading ? "Preparing PDF..." : "Generate Premium PDF"}
+  <button
+    onClick={next}
+    className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+  >
+    Continue
   </button>
+) : !savedContract ? (
+  <button
+    type="button"
+    onClick={saveContract}
+    className="rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+  >
+    Save Contract
+  </button>
+) : (
+  <PDFDownloadLink
+    document={<ContractPDF data={data} />}
+    fileName="contractpilot-clean-premium-agreement.pdf"
+    className="rounded-xl bg-green-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
+  >
+    {({ loading }) => (loading ? "Preparing PDF..." : "Download Premium PDF")}
+  </PDFDownloadLink>
 )}
-</PDFDownloadLink>
-              )}
             </div>
 
             {!isComplete() && (

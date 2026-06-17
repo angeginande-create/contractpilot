@@ -11,10 +11,14 @@ model User {
   email String  @unique
   name  String?
   image String?
-
   contracts Contract[]
 
   createdAt DateTime @default(now())
+
+ plan                 String  @default("FREE")
+ stripeCustomerId     String?
+ stripeSubscriptionId String?
+
 }
 
 model Contract {

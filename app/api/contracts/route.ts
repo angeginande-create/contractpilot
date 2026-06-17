@@ -47,6 +47,22 @@ const contractData = {
   userId: user.id,
 };
 
+const contractsCount = await prisma.contract.count({
+  where: {
+    userId: user.id,
+  },
+});
+
+if (user.plan === "FREE" && contractsCount >= 3) {
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Free plan limit reached. Upgrade to Pro.",
+    },
+    { status: 403 }
+  );
+}
+
 const contract = await prisma.contract.create({
   data: contractData as any,
 });

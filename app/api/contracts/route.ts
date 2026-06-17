@@ -31,10 +31,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const contractId = crypto.randomUUID();
 
-    const pdfUrl = await generateContractPdf({
-      ...body,
-      contractId,
-    });
+    const pdfUrl = null;
 
 const contractData = {
   contractId,

@@ -5,6 +5,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import ContractPDF from "./ContractPDF";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Link from "next/link";
 
 type Pricing = "fixed" | "hourly";
 type IP = "client" | "reuse" | "mixed";
@@ -100,8 +101,8 @@ export default function WizardPage() {
 
     const result = JSON.parse(text);
     console.log("Contract saved:", result);
-    setSavedContract(true);
     toast.success("Contract saved successfully");
+    setSavedContract(true);
     router.push("/dashboard");
   } catch (error) {
     console.error("Save failed:", error);
@@ -161,6 +162,13 @@ export default function WizardPage() {
         <div className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
           Not a law firm · No legal advice
         </div>
+
+        <Link
+  href="/dashboard"
+  className="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+>
+  Dashboard
+</Link>
       </header>
 
       <section className="mx-auto grid max-w-7xl gap-8 px-6 pb-8 pt-4 lg:grid-cols-[1fr_400px]">

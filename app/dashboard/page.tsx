@@ -143,15 +143,13 @@ export default async function DashboardPage() {
 </td>
 
           <td className="px-6 py-4">
-            {contract.pdfUrl && (
-  <a
-    href={contract.pdfUrl}
-    target="_blank"
-    className="rounded-xl bg-green-700 px-4 py-2 text-white"
-  >
-    View PDF
-  </a>
-)}
+          <Link
+  href={`/dashboard/${contract.id}`}
+  className="rounded-xl bg-green-600 px-4 py-2 text-white font-semibold"
+>
+  View PDF
+</Link>
+
 <DeleteContractButton id={contract.id} />
 <Link
   href={`/dashboard/${contract.id}`}
